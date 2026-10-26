@@ -53,6 +53,9 @@ button.g{background:var(--card);color:var(--fg);border:2px solid var(--bd);box-s
 .opt:disabled{cursor:default;color:var(--fg)}
 .opt.mine{box-shadow:0 0 0 3px #fff}
 .pick{display:inline-block;background:#fff;color:#14161c;font-size:.68rem;font-weight:800;border-radius:6px;padding:1px 7px;margin-right:6px}
+.note{background:#12151b;border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin:6px 0;white-space:pre-wrap}
+.dsc{margin-top:10px;border-left:4px solid #f08c00;padding:6px 10px;background:#2a2012;border-radius:0 8px 8px 0}
+input.nmi{font:inherit;border:2px solid var(--bd);border-radius:8px;padding:8px 10px;background:var(--card);color:var(--fg);width:100%;max-width:320px}
 .pr{border-top:1px solid var(--bd);padding:10px 0}.pr:first-of-type{border-top:0}
 .pb{display:flex;gap:8px;flex-wrap:wrap}.pb .opt{flex:1;min-width:130px;text-align:center;width:auto;margin:6px 0}
 .pf{margin-top:2px}
@@ -108,7 +111,7 @@ const TASKS=[null,
 {goal:"Choose 4 patients for extra care, then find out what the score measured.",how:"Tick 4 patients by risk score, press Enroll, then answer the question.",h:["For the first pick, just follow the highest scores.","The score predicts one thing a hospital tracks for every patient. What is it?"]},
 {goal:"Pick the best thing to give each person.",how:"Tap the best answer in each of the 4 scenarios.",h:["Ask: what can THIS person actually use?","Not everyone needs everything. Full openness has risks too."]},
 {goal:"Match each failure to the idea that would have caught it.",how:"Tap Explainability, Interpretability or Transparency on each line.",h:["Explainability = a reason for ONE person’s result. Interpretability = staff understand the rule. Transparency = outsiders can inspect it.","Ask: who needs to know? One person affected, staff using it, or outsiders checking it?"]}];
-const q=(t,h)=>`<div class="card" style="border-top-color:#f08c00"><div class="fl2" style="color:#ffa94d">❓ DISCUSSION QUESTION · for after you finish</div><b>${t}</b><p class="m">${h}</p><textarea placeholder="Jot your answer, then discuss with the class."></textarea></div>`;
+const q=(t,h)=>`<div class="card dq" style="border-top-color:#f08c00"><div class="fl2" style="color:#ffa94d">❓ DISCUSSION QUESTION · for after you finish</div><b>${t}</b><p class="m">${h}</p><textarea placeholder="Jot your answer, then discuss with the class."></textarea></div>`;
 const QS=["",q("Who is owed transparency, explainability, or interpretability in this case? Which of the three are they owed, and why?","Think: Dana, the nurse, the agency, courts, the public."),q("Who actually had access to how the algorithm worked when decisions were being made? What ethical problems does that pose?","Think: the developer, the vendor, the agency, the nurse, the client."),q("As a data scientist, how would you assess whether stakeholders understood what they needed to know? What evidence would convince you the explanations were working?","Think: teach-back tests, whether people spot and fix errors, appeal outcomes."),q("What level or kind of explanation does each key stakeholder need? What technical or non-technical approaches could provide it?","Think: patient, clinician, auditor. Reason codes, what-if tools, outcome audits, plain-language notices, advocates."),q("What are the possible trade-offs or risks of making the mechanisms behind benefit decisions more transparent?","Think: gaming, vendor secrecy, privacy, false comfort."),q("Knowing what you know now, what two or three principles, priorities or values would you want a team designing benefit algorithms not to lose sight of? What about this case makes them especially important?","Think: contestability, validity against real need, involving affected people.")];
 const FAC=["2 min. Skim the briefing. Set the mission: one sentence at the end.",
 "3 min. Ask who picked ‘how do I appeal’. Land it: Dana was given no reasons at all.",
@@ -117,7 +120,7 @@ const FAC=["2 min. Skim the briefing. Set the mission: one sentence at the end."
 "6 min. Ask who enrolled zero from Group B. Land it: the score predicts cost, not need; only auditors with outcome data would notice.",
 "5 min. Which scenarios split the room? Land it: different people need different layers, and full openness has risks.",
 "8 min. Cold-call claims, then push: if every explanation were perfect, what would still be wrong?"];
-let st={s:0,done:[1,0,0,0,0,0,0],pts:[0,0,0,0,0,0,0],bg:{},res:{}};
+let st={s:0,done:[1,0,0,0,0,0,0],pts:[0,0,0,0,0,0,0],bg:{},res:{},ans:{},notes:{},name:""};
 const xp=()=>st.pts.reduce((a,b)=>a+b,0);
 function hud(){const ic=["📋",...LM.map(m=>m.ic)],col=["#364fc7",...LM.map(m=>m.c)];
 $("pips").innerHTML=ic.map((x,i)=>`<b class="${i<=st.s?"on":""} ${i==st.s?"cur":""}" style="--p:${col[i]}" title="${i?LM[i-1].n:"Briefing"}">${x}</b>`).join("");
@@ -133,11 +136,49 @@ let top="";
 if(st.s){const t=TASKS[st.s];
 top=`<div class="ch">${m.ch}</div><div class="tag">LEVEL ${st.s} OF 6 · ${m.ic} ${m.n.toUpperCase()}</div><div class="bubble"><div class="av">${m.av}</div><div class="say"><div class="who">${m.who} · ${m.role}</div>${m.say}</div></div>
 <div class="task"><div class="tl">🎯 YOUR TASK</div><div class="goal">${t.goal}</div><div class="how">${t.how}</div><div class="tb"><button class="b g" id="hint">💡 Hint</button>${st.s<6?`<button class="b g" id="skip">⏭ Skip</button>`:""}</div><div id="hints"></div></div>${nf?"":`<details class="file"><summary><span class="fl2">📁 REAL CASE FILE · tap to read</span></summary>${m.f}</details>`}`}
-$("stage").innerHTML=top+fc+h+`<div id="tk"></div>`+(QS[st.s]||"");hud();bindHint();window.scrollTo(0,0)}
+$("stage").innerHTML=top+fc+h+`<div id="tk"></div>`+(QS[st.s]||"");const dq=document.querySelector(".dq textarea");if(dq){const kk="d"+st.s;dq.value=st.notes[kk]||"";dq.oninput=()=>{st.notes[kk]=dq.value}}hud();bindHint();window.scrollTo(0,0)}
 function bindHint(){const b=$("hint");if(!b)return;const H=TASKS[st.s].h;let i=0;
 const k=$("skip");if(k)k.onclick=()=>{st.done[st.s]=1;hud();k.textContent="Skipped. Press Next ▶";k.disabled=true};
 b.onclick=()=>{if(i>=H.length)return;$("hints").insertAdjacentHTML("beforeend",`<div class="hint">💡 <b>Hint ${i+1} of ${H.length}:</b> ${H[i]}</div>`);i++;if(i>=H.length){b.textContent="No more hints";b.disabled=true}else b.textContent="💡 Another hint"}}
 function mark(b){b.classList.add("mine");b.insertAdjacentHTML("afterbegin",'<span class="pick">✔ YOUR PICK</span> ')}
+const DQT=[null,"Who is owed transparency, explainability, or interpretability in this case? Which of the three are they owed, and why?","Who actually had access to how the algorithm worked when decisions were being made? What ethical problems does that pose?","As a data scientist, how would you assess whether stakeholders understood what they needed to know? What evidence would convince you the explanations were working?","What level or kind of explanation does each key stakeholder need? What technical or non-technical approaches could provide it?","What are the possible trade-offs or risks of making the mechanisms behind benefit decisions more transparent?","Knowing what you know now, what two or three principles, priorities or values would you want a team designing benefit algorithms not to lose sight of? What about this case makes them especially important?"];
+const MAXP=[0,30,30,40,30,40,50];
+const esc=x=>String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const rank=()=>{const t=xp();return t>=170?"Chief Advocate":t>=110?"Advocate":"Trainee"};
+function sections(){const A=st.ans,na=[{k:"line",t:"Skipped or not completed."}],out=[];
+const has=o=>o&&Object.keys(o).length;
+out.push(A.l1?[{k:"list",l:"You picked",i:A.l1.picked},{k:"list",l:"The top priorities were",i:A.l1.top},{k:"line",t:"Score: "+A.l1.n+" of 3. The notice answered none of them."}]:na);
+out.push(has(A.l2)?[{k:"table",h:["Person","Your answer","Right answer"],r:Object.values(A.l2).map(x=>[x.who,x.choice+(x.ok?" ✔":" ✖"),x.right])}]:na);
+out.push(has(A.l3)?[{k:"table",h:["Client","Your guess","Actually","Why"],r:Object.values(A.l3).map(x=>[x.who,x.choice+(x.ok?" ✔":" ✖"),x.right,x.why])}]:na);
+out.push(A.l4?[{k:"line",t:"You enrolled "+A.l4.ids.join(", ")+" (Group A: "+A.l4.A+", Group B: "+A.l4.B+")."},{k:"line",t:A.l4.mq?"What the score predicts, your answer: "+A.l4.mq.choice+(A.l4.mq.ok?" ✔":" ✖")+". Right answer: how much will be spent on the patient next year (cost, not need).":"You did not answer what the score predicts."}]:na);
+out.push(has(A.l5)?[{k:"table",h:["Scenario","Your answer","Best answer"],r:Object.values(A.l5).map(x=>[x.q,x.choice+(x.ok?" ✔":" ✖"),x.right])}]:na);
+const l6=[];if(has(A.l6m))l6.push({k:"table",h:["Failure","Your match","Right match"],r:Object.values(A.l6m).map(x=>[x.line,x.choice+(x.ok?" ✔":" ✖"),x.right])});
+l6.push({k:"line",t:"Your claim: "+((st.notes.claim||"").trim()||"(none written)")});
+if(A.l6r&&A.l6r.length)l6.push({k:"list",l:"Problems you said would remain even with perfect explanations",i:A.l6r});
+out.push(l6.length>1||has(A.l6m)?l6:na);
+return out}
+const rh=b=>b.k=="line"?`<p>${esc(b.t)}</p>`:b.k=="list"?`<p><b>${b.l}</b></p><ul>${b.i.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<div class="sc"><table><tr>${b.h.map(x=>`<th>${x}</th>`).join("")}</tr>${b.r.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</table></div>`;
+const rt=b=>b.k=="line"?b.t:b.k=="list"?b.l+":\n"+b.i.map(x=>"  - "+x).join("\n"):b.h.join(" | ")+"\n"+b.r.map(r=>r.join(" | ")).join("\n");
+function buildText(){const S=sections();
+let o="WHO IS OWED AN EXPLANATION · MY RESULTS\nName: "+(st.name||"(not given)")+"\nRank: "+rank()+" · "+xp()+" XP of 220 · Badges: "+(Object.keys(st.bg).map(k=>BADGE[k][1]).join(", ")||"none")+"\n";
+S.forEach((b,i)=>{const n=i+1;o+="\nLEVEL "+n+" · "+LM[i].n+" ("+st.pts[n]+" of "+MAXP[n]+" XP)\n"+b.map(rt).join("\n")+"\nDiscussion: "+DQT[n]+"\nMy answer: "+((st.notes["d"+n]||"").trim()||"(none)")+"\n"});
+return o}
+function debrief(){document.documentElement.style.setProperty("--c","#364fc7");const S=sections();
+$("stage").innerHTML=`<div class="ch">THE CASE IS CLOSED</div><div class="tag">📊 YOUR RESULTS</div>
+<div class="card"><div class="rank">${rank()} · ${xp()} XP</div>
+<p class="m" style="text-align:center">Rank: Trainee under 110 XP · Advocate 110 to 169 · Chief Advocate 170+ (max 220)<br>Badges: ${Object.keys(st.bg).map(k=>BADGE[k][0]+" "+BADGE[k][1]).join(" · ")||"none yet"}</p>
+<p>Name (optional, goes on your copy):<br><input class="nmi" id="nm" value="${esc(st.name)}" placeholder="Your name"></p>
+<button class="b" id="cp">📋 Copy my results</button> <span id="cpm" class="m"></span>
+<details id="pt" style="margin-top:8px"><summary class="m" style="cursor:pointer">Show plain text</summary><textarea id="ptx" readonly style="min-height:180px"></textarea></details></div>
+<div class="mission"><b>💬 Discuss with the class.</b> Where did your answers differ from a neighbour’s? Which level surprised you most?</div>
+${S.map((b,i)=>{const n=i+1,tx=(st.notes["d"+n]||"").trim();return `<div class="card" style="border-top-color:${LM[i].c}"><h2>${LM[i].ic} Level ${n} · ${LM[i].n} <span class="m">(${st.pts[n]}/${MAXP[n]} XP)</span></h2>${b.map(rh).join("")}<div class="dsc"><div class="fl2">❓ DISCUSS</div><b>${DQT[n]}</b>${tx?`<div class="note">${esc(tx)}</div>`:`<div class="note m">(no answer typed)</div>`}</div></div>`}).join("")}
+<button class="b g" id="bk">◀ Back to Level 6</button>`;
+const sync=()=>{$("ptx").value=buildText()};sync();
+$("nm").oninput=()=>{st.name=$("nm").value;sync()};
+$("cp").onclick=async()=>{const t=buildText();let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{const x=document.createElement("textarea");x.value=t;x.style.position="fixed";x.style.opacity="0";document.body.appendChild(x);x.select();ok=document.execCommand("copy");x.remove()}catch(e2){}}
+if(!ok)$("pt").open=true;$("cpm").textContent=ok?"Copied ✔":"Couldn’t copy automatically. Select the text below and copy it."};
+$("bk").onclick=()=>L[6]();
+window.scrollTo(0,0)}
 const L=[s0,s1,s2,s3,s4,s5,s6];
 function go(d){st.s=Math.max(0,Math.min(6,st.s+d));L[st.s]()}
 $("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);$("fac").onchange=()=>L[st.s]();
@@ -152,7 +193,7 @@ put(`<div class="story"><div class="eyebrow">YOUR FIRST DAY AT MERIDIAN HEALTH A
 <div class="card" style="border-top-color:#364fc7"><h3>📰 The case in brief</h3>
 <p><b>What happened.</b> In 2016, Arkansas’s Medicaid home-care program (ARChoices) replaced nurse-decided care hours with an algorithm. Nurses still asked about 280 questions, but software then sorted each person into a group with fixed hours. People like Tammy Dobbs and Bradley Ledgerwood, who have cerebral palsy, dropped from 56 to 32 hours a week. Most had no idea why, and only 9 of nearly 200 appeals in 2016 succeeded. Legal Aid lawsuits got the rollout blocked for skipping public notice and comment, and judges in Idaho and West Virginia ruled that unexplained, unaudited or secret algorithms undermine a fair appeal.</p>
 <p><b>Why we’re doing this.</b> The readings ask: <i>who is owed transparency, explainability or interpretability when an algorithm decides benefits, and why?</i> You’ll play through the case, plus a hospital example, to see who needed to know what, and what went wrong when they couldn’t.</p></div>
-<div class="card how" style="border-top-color:#364fc7"><h3>🎮 How to play</h3><ol><li><b>Read the 🎯 Your Task box.</b> It says exactly what to tap.</li><li><b>Stuck?</b> Press <b>💡 Hint</b> (free) or <b>⏭ Skip</b>.</li><li><b>Finish the task</b> to see what you learned, earn ⭐ XP and badges, and unlock the next level.</li></ol><p class="m">About 30 minutes. You can’t lose: a wrong answer is how you learn what was hidden. The people and numbers inside levels are made up; the “real case file” boxes are true.</p></div>
+<div class="card how" style="border-top-color:#364fc7"><h3>🎮 How to play</h3><ol><li><b>Read the 🎯 Your Task box.</b> It says exactly what to tap.</li><li><b>Stuck?</b> Press <b>💡 Hint</b> (free) or <b>⏭ Skip</b>.</li><li><b>Finish the task</b> to see what you learned, earn ⭐ XP and badges, and unlock the next level.</li><li>At the end you get a <b>results summary</b> with your answers to copy or download and discuss.</li></ol><p class="m">About 30 minutes. You can’t lose: a wrong answer is how you learn what was hidden. The people and numbers inside levels are made up; the “real case file” boxes are true.</p></div>
 <h3>The two real cases</h3>
 <div class="two">
 <div class="cs a"><b>🏠 Case A · Home-care hours</b><div class="m">Arkansas Medicaid, 2016</div><ul><li>An algorithm replaced nurse-set hours.</li><li>Tammy and Bradley: 56 → 32 hours a week.</li><li>About half the program, roughly 4,000 people, saw cuts in 2016.</li></ul></div>
@@ -177,18 +218,18 @@ ob.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b
 $("cnt").textContent=sel.size+" of 3 chosen";$("go1").disabled=sel.size!=3});
 $("go1").onclick=()=>{let n=0;
 ob.forEach((b,i)=>{b.disabled=true;b.classList.remove("sel");if(sel.has(i))mark(b);if(Q[i][1]){b.classList.add("good");b.insertAdjacentHTML("beforeend",'<span class="stamp">NOT PROVIDED</span>');if(sel.has(i))n++}else if(sel.has(i))b.classList.add("meh")});
-$("go1").disabled=true;st.res.q1=n;
+$("go1").disabled=true;st.res.q1=n;st.ans.l1={picked:[...sel].map(i=>Q[i][0]),top:Q.filter(x=>x[1]).map(x=>x[0]),n};
 $("r1").innerHTML=`<div class="key">You picked <b>${n} of 3</b> top-priority questions.<br>⬜ White ring + ✔ YOUR PICK = what you chose · 🟩 Green = top priority · 🟧 Orange = your pick, but it can wait.<br>The notice answered <b>none</b> of the green ones.</div>`;
 fin(n*10,n>=2?"ex":0);
 take("<b>Explainability</b> means a person gets a reason for <i>their own</i> result that they can act on. Dana’s notice gave her none, so she can’t even tell whether it’s worth appealing.")}}
 
 function s2(){
 const P=[["👩","Dana, the client",0,"Her letter gave no reasons and she had no way to look inside."],["👩‍⚕️","Teresa, the nurse",0,"She typed answers in but could not see the rule or change the result."],["🏛️","State agency staff",0,"Attorneys said no one at the agency could explain which answers drove a result."],["🧑‍💻","The developer",1,"The builders designed the rule, so they knew how it worked."],["🌍","The public",0,"Much only came out through lawsuits, after people were cut."]];
-const got={};
+const got={};st.ans.l2={};
 put(`<div class="card"><h2>Who can see inside the machine?</h2><p>The machine turns a client’s answers into care hours with a hidden rule. For each person, tap <b>🔑 Could see it</b> or <b>🔒 Couldn’t</b>.</p>
 ${P.map((p,i)=>`<div class="pr"><div>${p[0]} <b>${p[1]}</b></div><div class="pb" id="pb${i}"><button class="opt k" data-i="${i}" data-v="1">🔑 Could see it</button><button class="opt k" data-i="${i}" data-v="0">🔒 Couldn’t</button></div><div class="pf m" id="pf${i}"></div></div>`).join("")}<div id="r2"></div></div>`);
 document.querySelectorAll(".k").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(got[i]!==undefined)return;
-const ok=+b.dataset.v===P[i][2];got[i]=ok;mark(b);
+const ok=+b.dataset.v===P[i][2];got[i]=ok;mark(b);st.ans.l2[i]={who:P[i][1],choice:+b.dataset.v?"Could see it":"Couldn’t see it",right:P[i][2]?"Could see it":"Couldn’t see it",ok};
 document.querySelectorAll("#pb"+i+" .opt").forEach(x=>{x.disabled=true;if(+x.dataset.v===P[i][2])x.classList.add("good")});
 if(!ok)b.classList.add("bad");
 $("pf"+i).innerHTML=(ok?"✅ ":"❌ ")+P[i][3];
@@ -202,12 +243,12 @@ const C=[{n:"Marcus, 61",sc:[3,2,0,2,3,1],story:"Cannot feed himself. His spouse
 {n:"Rosa, 74",sc:[2,1,1,2,2,0],story:"Some days she needs a lot of help, some days not.",bad:1,flag:-1,why:"Her total is 8, one point below the next band (9). One more point would jump her from 20 to 28 hours. Tiny differences, huge swings."},
 {n:"Noor, 52",sc:[3,3,1,2,3,3],story:"Has diabetes. Needs insulin help several times a day.",bad:1,flag:5,why:"Medication help is scored 3 but the rule never counts it. Her biggest need is invisible to the machine."},
 {n:"Ben, 45",sc:[1,1,0,1,1,0],story:"Mostly independent. Some help bathing and moving.",bad:0,flag:-1,why:"The scores match the story and the hours fit. This one is fine."}];
-const g={};
+const g={};st.ans.l3={};
 const sheet=c=>`<div class="sc"><table><tr>${IT.map(n=>`<th>${n.slice(0,6)}</th>`).join("")}<th>Total*</th><th>Hours</th></tr><tr>${c.sc.map((v,j)=>`<td class="${j==c.flag?"flag":""}">${v}${j==5?" ✖":""}</td>`).join("")}<td>${sum5(c.sc)}</td><td>${mh(c.sc)}</td></tr></table><div class="m">*First five answers only. ✖ = never counted. Red = the problem.</div></div>`;
 put(`<div class="card"><h2>Four clients, four decisions</h2><p>You only see what a client would see: their situation and the hours. <b>Guess first</b>, then the factor sheet opens.</p></div>
 ${C.map((c,i)=>`<div class="card"><b>${c.n}</b><div class="m">${c.story}</div><p>The machine says: <b>${mh(c.sc)} hours a week</b></p><div class="pb" id="jb${i}"><button class="opt j" data-i="${i}" data-v="0">👍 Looks fair</button><button class="opt j" data-i="${i}" data-v="1">👎 Looks unfair</button></div><div id="js${i}"></div></div>`).join("")}`);
 document.querySelectorAll(".j").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(g[i]!==undefined)return;const c=C[i];
-const ok=+b.dataset.v===c.bad;g[i]=ok;mark(b);
+const ok=+b.dataset.v===c.bad;g[i]=ok;mark(b);st.ans.l3[i]={who:c.n,choice:+b.dataset.v?"Unfair":"Fair",right:c.bad?"Unfair":"Fair",why:c.why,ok};
 document.querySelectorAll("#jb"+i+" .opt").forEach(x=>{x.disabled=true;if(+x.dataset.v===c.bad)x.classList.add("good")});
 if(!ok)b.classList.add("bad");
 $("js"+i).innerHTML=`<div class="key"><b>${ok?"✅ Good call.":"❌ Not quite."}</b> ${c.why}${sheet(c)}</div>`;
@@ -223,12 +264,12 @@ put(`<div class="card"><h2>CareBridge: 4 slots</h2><p>CareBridge gives extra nur
 const boxes=[...document.querySelectorAll(".e")];
 boxes.forEach(x=>x.onchange=()=>{const n=boxes.filter(y=>y.checked).length;if(n>4){x.checked=false;return}$("ecnt").textContent=n+" of 4 ticked";$("en").disabled=n!=4});
 $("en").onclick=()=>{const a=boxes.filter(y=>y.checked).map(y=>PT.find(p=>p[0]==y.value));
-const A=a.filter(p=>p[1]=="A").length,B=a.length-A;
+const A=a.filter(p=>p[1]=="A").length,B=a.length-A;st.ans.l4={ids:a.map(p=>p[0]),A,B};
 $("en").disabled=true;boxes.forEach(x=>x.disabled=true);
 $("r4a").innerHTML=`<div class="key">You enrolled <b>${A}</b> from Group A and <b>${B}</b> from Group B. Dr. Ortiz says both groups are <b>equally sick</b>. Hmm.</div>
 <p><b>The risk score was built to predict one thing. Which?</b></p>
 <button class="opt mq" data-v="s">How sick the patient is</button><button class="opt mq" data-v="c">How much will be spent on the patient next year</button><button class="opt mq" data-v="a">Whether the patient will miss appointments</button><div id="r4m"></div>`;
-document.querySelectorAll(".mq").forEach(b=>b.onclick=()=>{const ok=b.dataset.v=="c";mark(b);
+document.querySelectorAll(".mq").forEach(b=>b.onclick=()=>{const ok=b.dataset.v=="c";st.ans.l4.mq={choice:b.textContent.trim(),ok};mark(b);
 document.querySelectorAll(".mq").forEach(x=>{x.disabled=true;if(x.dataset.v=="c")x.classList.add("good")});if(!ok)b.classList.add("bad");
 const m=LM[3];
 $("r4b").innerHTML=`<div class="card"><h2>${ok?"Right: ":"Actually: "}the score predicts cost</h2><p>Group B patients are as sick as Group A, but <b>less is spent on them</b> (for example, barriers to getting care). A cost-based score reads lower spending as lower need.</p>
@@ -242,10 +283,10 @@ const S=[{q:"Dana wants to appeal her cut. What should she get?",o:[["A plain re
 {q:"The nurse thinks a client’s answer was mistyped. What helps most?",o:[["Show her how answers become hours, and let her override",1,"Yes. Interpretability plus real human oversight lets staff catch errors."],["Tell her to trust the machine",0,"Then errors like a mistyped 0 go uncaught."],["Ask the vendor by email",0,"Too slow. The people using the system need to understand it themselves."]]},
 {q:"An auditor suspects some groups get missed. What do they need?",o:[["What the score predicts, plus outcomes and error rates by group",1,"Yes. That is transparency to auditors. It would have exposed the hospital’s cost proxy."],["Each patient’s own letter",0,"Individual letters can’t reveal a pattern across groups."],["Nothing: it’s a trade secret",0,"In West Virginia a judge said a secret algorithm blocked a fair appeal."]]},
 {q:"What should the PUBLIC get before a new tool starts?",o:[["Notice and a chance to comment, plus its goal, testing and error rates",1,"Yes. Arkansas was blocked for skipping public notice and comment. Exact cutoffs can go to auditors only, since full publication risks gaming."],["Every exact cutoff and rule, to everyone",0,"Risky: people could game it. Idaho worried about people copying its interview booklet."],["Nothing until someone sues",0,"That is what happened, and many people were cut first."]]}];
-let n=0,ans=0;
+let n=0,ans=0;st.ans.l5={};
 put(`<div class="card"><h2>What should each person get?</h2><p class="m">Trust meter: <span id="tm">🤍🤍🤍🤍</span></p>
 ${S.map((s,i)=>`<div class="pr"><b>${i+1}. ${s.q}</b><div id="o${i}">${[0,1,2].map(k=>(k+i)%3).map(k=>`<button class="opt a" data-i="${i}" data-k="${k}">${s.o[k][0]}</button>`).join("")}</div><div class="pf" id="f${i}"></div></div>`).join("")}</div>`);
-document.querySelectorAll(".a").forEach(b=>b.onclick=()=>{const i=+b.dataset.i,k=+b.dataset.k,s=S[i],ok=s.o[k][1]===1;mark(b);
+document.querySelectorAll(".a").forEach(b=>b.onclick=()=>{const i=+b.dataset.i,k=+b.dataset.k,s=S[i],ok=s.o[k][1]===1;mark(b);st.ans.l5[i]={q:s.q,choice:s.o[k][0],right:s.o.find(o=>o[1]===1)[0],ok};
 document.querySelectorAll("#o"+i+" .opt").forEach(x=>{x.disabled=true;if(s.o[+x.dataset.k][1])x.classList.add("good")});
 if(!ok)b.classList.add("bad");
 $("f"+i).innerHTML=`<div class="key"><b>${ok?"✅":"❌"}</b> ${s.o[k][2]}</div>`;
@@ -257,21 +298,22 @@ function s6(){
 const R=st.res;
 const M=[["Dana can’t tell why her hours were cut.","E","She needs a reason for her own result: explainability."],["A nurse can’t tell the rule ignores Medication help.","I","Staff who run the system need to understand how it works: interpretability."],["Nobody outside could check that the hospital score predicts cost, not need.","T","Outsiders like auditors and courts need access to the target and outcomes by group: transparency."],["The state switched on the tool without telling the public.","T","Public notice and comment is transparency to the public."]];
 const NM={E:"Explainability",I:"Interpretability",T:"Transparency"};
-let hits=0,ans=0;
+let hits=0,ans=0;st.ans.l6m={};
 put(`<div class="card"><h2>Your evidence</h2><div class="key"><ul><li>Level 1: you picked ${R.q1??"?"} of 3 top questions. The notice answered none.</li><li>Level 2: only the developer could see the rule.</li><li>Level 3: ${R.l3??"?"} of 4 guesses right before seeing the sheet.</li><li>Level 4: the cost-based score left out Group B.</li><li>Level 5: ${R.l5??"?"} of 4 right tool choices.</li></ul></div></div>
 <div class="card"><h2>Match the fix</h2><p class="m">Explainability = a reason for ONE person’s result · Interpretability = staff understand the rule · Transparency = outsiders can inspect it</p>
 ${M.map((m,i)=>`<div class="pr"><div>${m[0]}</div><div class="pb" id="mb${i}"><button class="opt t" data-i="${i}" data-v="E">Explainability</button><button class="opt t" data-i="${i}" data-v="I">Interpretability</button><button class="opt t" data-i="${i}" data-v="T">Transparency</button></div><div class="pf m" id="mf${i}"></div></div>`).join("")}</div>
-<div class="card"><h2>Your claim</h2><p><b>One sentence: who is owed what, and why?</b></p><textarea placeholder="Write your claim, then share it with the class."></textarea>
+<div class="card"><h2>Your claim</h2><p><b>One sentence: who is owed what, and why?</b></p><textarea id="claim" placeholder="Write your claim, then share it with the class."></textarea>
 <p><b>If every explanation were perfect, what would still be wrong?</b> Tick any.</p>
 ${["The rule was built on past cost, not actual need (both cases)","The goal was saving money, not meeting care needs","The burden of finding errors sits on the people affected","Affected people were not consulted before rollout","Hours were capped well below prior levels","Risk of institutionalization (ADA)"].map(x=>`<label class="c"><input type="checkbox" class="rm"> ${x}</label>`).join("")}
 <button class="b" id="go6">Close the case ▶</button><div id="r6"></div></div>`);
+$("claim").value=st.notes.claim||"";$("claim").oninput=()=>{st.notes.claim=$("claim").value};
 document.querySelectorAll(".t").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(document.querySelector("#mb"+i+" .opt:disabled"))return;
-const ok=b.dataset.v==M[i][1];mark(b);if(ok)hits++;ans++;
+const ok=b.dataset.v==M[i][1];mark(b);st.ans.l6m[i]={line:M[i][0],choice:NM[b.dataset.v],right:NM[M[i][1]],ok};if(ok)hits++;ans++;
 document.querySelectorAll("#mb"+i+" .opt").forEach(x=>{x.disabled=true;if(x.dataset.v==M[i][1])x.classList.add("good")});
 if(!ok)b.classList.add("bad");
 $("mf"+i).innerHTML=(ok?"✅ ":"❌ ")+"<b>"+NM[M[i][1]]+".</b> "+M[i][2]});
-$("go6").onclick=()=>{const n=document.querySelectorAll(".rm:checked").length;$("go6").disabled=true;
+$("go6").onclick=()=>{const n=document.querySelectorAll(".rm:checked").length;$("go6").disabled=true;st.notes.claim=$("claim").value;st.ans.l6r=[...document.querySelectorAll(".rm:checked")].map(x=>x.parentNode.textContent.trim());
 fin(hits*5+n*5,n>=4?"sk":0);const t=xp(),rk=t>=170?"Chief Advocate":t>=110?"Advocate":"Trainee";
-$("r6").innerHTML=`<div class="key"><div class="rank">${rk} · ${t} XP</div><p><b>Takeaway.</b> Explainability lets an individual contest a decision. Interpretability lets operators notice errors. Transparency lets auditors, courts and the public hold the system to account. Both systems lacked all three, and even all three would not fix a wrong objective.</p></div>`}}
+$("r6").innerHTML=`<div class="key"><div class="rank">${rk} · ${t} XP</div><p><b>Takeaway.</b> Explainability lets an individual contest a decision. Interpretability lets operators notice errors. Transparency lets auditors, courts and the public hold the system to account. Both systems lacked all three, and even all three would not fix a wrong objective.</p></div><button class="b" id="dbg">📊 See my results &amp; discussion ▶</button>`;$("dbg").onclick=debrief}}
 s0();
 </script></main></body></html>
