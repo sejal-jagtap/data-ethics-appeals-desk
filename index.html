@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="color-scheme" content="dark"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Who Is Owed an Explanation</title>
+<style>
+:root{--c:#364fc7;--fg:#1c1c1a;--mut:#5f5f58;--bd:#e3e1d8;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{background:#fff;color-scheme:light}
+body{margin:0;color:var(--fg);background:linear-gradient(#fff,color-mix(in srgb,var(--c) 12%,#fff)) fixed;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+main{max-width:860px;margin:auto;padding:0 14px 10px}
+#hud{position:sticky;top:0;z-index:9;background:#fffffff2;border-bottom:1px solid var(--bd);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 -14px}
+#pips{display:flex;gap:5px}#pips b{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:.95rem;background:#e9e7de;filter:grayscale(1);opacity:.7}
+#pips b.on{background:color-mix(in srgb,var(--p) 22%,#fff);filter:none;opacity:1}#pips b.cur{outline:3px solid var(--p)}
+#xp{font-weight:800;background:#fff3bf;border:1px solid #f1c40f;border-radius:99px;padding:2px 12px;font-size:.9rem}
+#bd{display:flex;gap:4px;font-size:1.1rem;flex:1;min-height:28px}#bd span{background:#fff;border:1px solid var(--bd);border-radius:8px;padding:0 5px}
+.fl{font-size:.8rem;color:var(--mut)}
+.ch{margin:18px 0 0;font-size:.74rem;font-weight:800;letter-spacing:.1em;color:var(--c)}
+.tag{display:inline-block;background:var(--c);color:#fff;font-weight:800;font-size:.76rem;letter-spacing:.06em;padding:4px 14px;border-radius:99px;margin:6px 0 8px}
+.bubble{display:flex;gap:12px;align-items:flex-start;margin:8px 0}
+.av{width:50px;height:50px;border-radius:50%;background:color-mix(in srgb,var(--c) 18%,#fff);display:grid;place-items:center;font-size:1.7rem;flex:none;border:2px solid var(--c)}
+.say{background:#fff;border:1px solid var(--bd);border-radius:4px 16px 16px 16px;padding:10px 14px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.who{font-size:.76rem;color:var(--mut);font-weight:700;margin-bottom:2px}
+.file{background:color-mix(in srgb,var(--c) 10%,#fff);border:1px dashed var(--c);border-radius:12px;padding:10px 14px;font-size:.9rem;margin:8px 0}
+.fl2{font-size:.7rem;font-weight:800;letter-spacing:.1em;color:var(--c);margin-bottom:2px}
+.card{background:#fff;border:1px solid var(--bd);border-top:5px solid var(--c);border-radius:14px;padding:16px 18px;margin:12px 0;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+h2{font-size:1.25rem;margin:0 0 .4em}h3{margin:.2em 0;font-size:1rem}
+.story{background:linear-gradient(135deg,#4c6ef5,#9c36b5);color:#fff;border-radius:18px;padding:22px 22px;margin:16px 0}
+.story h2{font-size:1.5rem;color:#fff}.story p{margin:.4em 0}.eyebrow{font-size:.72rem;font-weight:800;letter-spacing:.12em;opacity:.9}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cs{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.cs.a{border-top:5px solid #e8590c}.cs.b{border-top:5px solid #0c8599}.cs .big{font-size:1.8rem}
+.cs ul{margin:.3em 0;padding-left:1.1em;font-size:.9rem}
+.term{border-radius:12px;padding:10px 12px;font-size:.88rem}.t1{background:#e7f5ff}.t2{background:#fff4e6}.t3{background:#f3f0ff}
+.mission{background:#fff9db;border:2px solid #f1c40f;border-radius:14px;padding:12px 16px;margin:12px 0}
+.fac{border-left:5px solid #f08c00;background:#fff4e0;padding:8px 12px;margin:10px 0;font-size:.9rem;border-radius:0 10px 10px 0}
+.key{border-left:5px solid var(--c);background:color-mix(in srgb,var(--c) 9%,#fff);padding:12px 14px;margin:12px 0;border-radius:0 12px 12px 0}
+.row{display:grid;grid-template-columns:130px 1fr 22px;gap:8px;align-items:center;margin:4px 0;font-size:.9rem}
+input[type=range]{width:100%;accent-color:var(--c);height:30px}
+label.c{display:block;padding:9px 12px;border:2px solid var(--bd);border-radius:10px;cursor:pointer;margin:6px 0;background:#fff}
+label.c:has(input:checked){border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,#fff)}
+label.c input{margin-right:8px;accent-color:var(--c)}
+button.b{padding:11px 22px;font:inherit;font-weight:700;border:0;background:var(--c);color:#fff;border-radius:10px;cursor:pointer;min-height:44px;box-shadow:0 3px 0 color-mix(in srgb,var(--c) 70%,#000)}
+button.b:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}button.g{background:#fff;color:var(--fg);border:2px solid var(--bd);box-shadow:none}
+select,textarea{font:inherit;border:2px solid var(--bd);border-radius:8px;padding:7px 10px;min-height:40px;background:#fff;color:var(--fg)}
+textarea{width:100%;min-height:76px}
+table{border-collapse:collapse;width:100%;font-size:.85rem}th,td{border:1px solid var(--bd);padding:5px 7px;text-align:left}th{background:#f6f5ef}
+.sc{overflow-x:auto}.bad{color:#c92a2a}.ok{color:#2b8a3e}.m{color:var(--mut);font-size:.88rem}
+.nav{position:sticky;bottom:0;z-index:9;display:flex;justify-content:space-between;background:#fffffff2;padding:10px 14px;margin:14px -14px 0;border-top:1px solid var(--bd)}
+.ntc{background:#fffbe6;border:2px dashed #e0a800;border-radius:10px;padding:10px 14px;margin:8px 0}
+.stamp{display:inline-block;transform:rotate(-5deg);border:2px solid #c92a2a;color:#c92a2a;font-weight:800;font-size:.68rem;padding:0 6px;border-radius:4px;margin-left:8px}
+.rank{text-align:center;font-size:1.5rem;font-weight:800;color:var(--c)}
+.src{font-size:.78rem;color:var(--mut);margin:10px 0}
+@media (max-width:600px){.two,.three{grid-template-columns:1fr}.row{grid-template-columns:96px 1fr 20px;font-size:.82rem}.card{padding:14px}}
+:root{--fg:#ecece6;--mut:#a9a9a0;--bd:#353a46;color-scheme:dark}
+html{background:#14161c;color-scheme:dark}
+body{color:var(--fg);background:linear-gradient(#14161c,color-mix(in srgb,var(--c) 24%,#14161c)) fixed}
+#hud,.nav{background:#14161cf2}
+#pips b{background:#2a2e38}#pips b.on{background:color-mix(in srgb,var(--p) 38%,#14161c)}
+#xp{background:#3d3410;border-color:#8a6d0a;color:#ffe28a}
+#bd span,.say,.card,.cs,label.c,select,textarea,button.g{background:#1e222b;color:var(--fg)}
+.file,.key{background:color-mix(in srgb,var(--c) 18%,#1e222b)}
+label.c:has(input:checked){background:color-mix(in srgb,var(--c) 30%,#1e222b)}
+.t1{background:#16303f}.t2{background:#3a2a14}.t3{background:#2a2447}
+.mission,.ntc{background:#3a3312;border-color:#a8890f}.fac{background:#3a2c12}
+th{background:#262a35}.av{background:color-mix(in srgb,var(--c) 32%,#1e222b)}
+.bad{color:#ff8787}.ok{color:#69db7c}.stamp{color:#ff8787;border-color:#ff8787}
+.ch,.fl2,.rank{color:color-mix(in srgb,var(--c) 45%,#fff)}
+.tag{color:#fff}
+</style></head><body><main>
+<div id="hud"><div id="pips"></div><div id="xp"></div><div id="bd"></div><label class="fl"><input type="checkbox" id="fac"> Facilitator</label></div>
+<div id="stage"></div>
+<div class="nav"><button class="b g" id="prev">Back</button><button class="b" id="next">Next level</button></div>
+<script>
+const IT=["Transferring","Toileting","Eating","Bathing","Mobility","Medication help"];
+const BANDS=[[0,6],[3,12],[6,20],[9,28],[12,33],[15,37]],HV=[6,12,20,28,33,37];
+const sum5=s=>s.slice(0,5).reduce((a,b)=>a+b,0);
+const mh=s=>BANDS.filter(b=>b[0]<=sum5(s)).pop()[1];
+const $=i=>document.getElementById(i);
+const T=[[1,1,1,1,1,3],[3,2,1,2,3,0],[3,2,2,3,2,0]];
+const LM=[
+{n:"The Notice",ic:"📄",c:"#e8590c",ch:"CHAPTER 1 · THE HOME-CARE ALGORITHM",av:"👩‍⚖️",who:"Priya Raman",role:"Legal Aid attorney (fictional)",
+say:"Dana called our line this morning. She got this letter and no explanation. Before she can appeal, we have to know what to ask the agency.",
+f:"In 2016 Arkansas replaced nurse-set home-care hours with an algorithm. Tammy Dobbs and Bradley Ledgerwood each went from 56 to 32 hours a week. Legal Aid attorneys said hundreds of people called and most had no idea why their hours changed."},
+{n:"The Nurse",ic:"🩺",c:"#1971c2",ch:"CHAPTER 1 · THE HOME-CARE ALGORITHM",av:"👩‍⚕️",who:"Teresa Okafor",role:"Assessing nurse (fictional)",
+say:"I visit, I ask the questions, I type in the answers. Then the screen gives a number of hours and that’s that. I couldn’t tell you how it gets there.",
+f:"Nurses still visited and answered about 280 questions, but one caregiver reported the nurse had no authority to change the outcome. Attorneys said no one inside the state agency could say which answers drove a result."},
+{n:"The Audit",ic:"🔍",c:"#2f9e44",ch:"CHAPTER 1 · THE HOME-CARE ALGORITHM",av:"🧑‍💼",who:"Sam Whitfield",role:"Court-appointed auditor (fictional)",
+say:"The judge wants to know if these decisions hold up. I’ve pulled six cases. First you see what a client sees. Then you get the factor sheet.",
+f:"Critics said only about 60 of the 280 questions counted, and that one point on one question could shift care by 49 hours a month. In 2016 about 9 of nearly 200 appeals succeeded, and Legal Aid said all of those clients had legal representation."},
+{n:"The Score",ic:"🏥",c:"#0c8599",ch:"CHAPTER 2 · THE HOSPITAL RISK SCORE",av:"👩‍⚕️",who:"Dr. Lena Ortiz",role:"Chief medical officer, Lakeview Health (fictional)",
+say:"Our risk score picked who gets into the new CareBridge program. The numbers look neat, but when I look at who’s missing, something feels off. Can you check?",
+f:"Researchers studied a widely used health-care risk tool that ranked patients by predicted cost. Chronically ill Black patients had less money spent on them than equally sick white patients, so they were consistently underserved. About 17.7% of Black patients got extra care; the researchers found that would be 46.5% without the bias (reported by The Markup)."},
+{n:"The Redesign",ic:"🏗️",c:"#7048e8",ch:"CHAPTER 3 · THE FIX",av:"👩‍⚖️",who:"Priya Raman",role:"Legal Aid attorney (fictional)",
+say:"Both systems failed the same way: the people who could have caught the problem couldn’t see it. Let’s write disclosure rules that would have worked, without handing everyone everything.",
+f:"Courts split on how much to disclose. Arkansas required the factors behind an individual cut, not the whole algorithm. A West Virginia judge said a secret algorithm blocked a fair appeal. Idaho’s judge cited limited, unaudited data. Vendors’ trade-secret claims did not hold up in West Virginia."},
+{n:"The Hearing",ic:"⚖️",c:"#c2255c",ch:"CHAPTER 3 · THE FIX",av:"🧑‍⚖️",who:"Judge Hale",role:"Presiding judge (fictional)",
+say:"Counsel, you’ve seen two systems. Tell me who is owed an explanation, what kind, and whether explaining it would have been enough.",
+f:"Arkansas’s rollout was blocked because the state skipped public notice and comment, and the state later chose not to keep the algorithm that cut Bradley’s and Tammy’s hours. Advocates also argue deep cuts can risk violating the ADA’s community-integration rule by pushing people toward institutions."}];
+const BADGE={ex:["📣","Explainer"],ip:["🔍","Interpreter"],au:["🕵️","Auditor"],pr:["🎯","Proxy Hunter"],ar:["🏗️","Architect"],sk:["⚖️","Skeptic"]};
+const CASES=[
+{n:"Marcus, 61",sc:[3,2,0,2,3,1],story:"Cannot feed himself. His spouse cuts food and holds the cup.",bad:1,why:"Data-entry error: Eating was recorded as 0. Invisible without the factor sheet."},
+{n:"Rosa, 74",sc:[2,1,1,2,2,0],story:"On the edge. Some days she needs help, some days not.",bad:1,why:"Cliff: one point on any item moves her from 20 to 28 hrs. You need the score and band rules to see it."},
+{n:"Noor, 52",sc:[3,3,1,2,3,3],story:"Diabetes. Needs insulin help several times a day.",bad:1,why:"Medication help scored 3 but the model ignores it, like the reported diabetes and cerebral palsy miss. Needs audit-level access."},
+{n:"Ben, 45",sc:[1,1,0,1,1,0],story:"Mostly independent. Some help bathing and moving.",bad:0,why:"Consistent. Award fits the story."},
+{n:"Lena, 80",sc:[3,3,3,3,3,0],story:"Total help with every daily task.",bad:0,why:"Consistent with her story (37 hrs is still the cap)."},
+{n:"Omar, 33",sc:[2,2,1,2,2,0],story:"Needs help with most tasks. Works part-time.",bad:0,why:"Consistent. Award fits the story."}];
+const PT=[["A1","A",5,15200],["A2","A",4,10500],["A3","A",4,12100],["A4","A",2,6200],["A5","A",1,3100],["A6","A",5,14800],["B1","B",5,10100],["B2","B",5,9800],["B3","B",4,8200],["B4","B",3,6100],["B5","B",2,4000],["B6","B",1,2000]];
+const LV=["0 Black box","1 Factors","2 Full rules","3 What-if","4 Audit access"];
+const FAC=[
+"2 min. Let students skim the briefing. Ask: in which case was a person least able to find out why? Set the mission: one sentence at the end.",
+"3 min. Ask who would appeal and who can’t tell. Land it: you can’t contest what you can’t see.",
+"7 min. Ask who found that Medication help does nothing, and with how many probes. Land it: even a trained nurse struggles; beneficiaries get zero probes.",
+"8 min. Collect Round A vs B scores out loud. Expect A near chance, B near perfect. Land it: errors were invisible without the factor sheet.",
+"8 min. Ask how many Group B patients each person enrolled by score vs by need. Land it: a patient’s own explanation would never reveal this; auditors needed the target and group outcomes.",
+"6 min. Who cleared the level? What did you give the public? Land it: tiered access and the gaming trade-off.",
+"8 min. Cold-call claims, then push: if everything were explained perfectly, what would still be wrong?"];
+let st={s:0,done:[1,0,0,0,0,0,0],pts:[0,0,0,0,0,0,0],bg:{},pr:[],ph:"A",lv:{b:0,n:0,a:0,p:0},res:{}};
+const xp=()=>st.pts.reduce((a,b)=>a+b,0);
+function hud(){const ic=["📋",...LM.map(m=>m.ic)],col=["#364fc7",...LM.map(m=>m.c)];
+$("pips").innerHTML=ic.map((x,i)=>`<b class="${i<=st.s?"on":""} ${i==st.s?"cur":""}" style="--p:${col[i]}" title="${i?LM[i-1].n:"Briefing"}">${x}</b>`).join("");
+$("xp").textContent="⭐ "+xp()+" XP";$("bd").innerHTML=Object.keys(st.bg).map(k=>`<span title="${BADGE[k][1]}">${BADGE[k][0]}</span>`).join("");
+$("prev").disabled=st.s==0;$("next").disabled=!st.done[st.s];$("next").textContent=st.s==0?"Start the case ▶":"Next level ▶";$("next").style.visibility=st.s==6?"hidden":"visible"}
+function put(h,nf){const m=LM[st.s-1];document.documentElement.style.setProperty("--c",st.s?m.c:"#364fc7");
+const f=$("fac").checked?`<div class="fac"><b>Facilitator:</b> ${FAC[st.s]}</div>`:"";
+let top="";
+if(st.s){top=`<div class="ch">${m.ch}</div><div class="tag">LEVEL ${st.s} OF 6 · ${m.ic} ${m.n.toUpperCase()}</div><div class="bubble"><div class="av">${m.av}</div><div class="say"><div class="who">${m.who} · ${m.role}</div>${m.say}</div></div>${nf?"":`<div class="file"><div class="fl2">📁 REAL CASE FILE</div>${m.f}</div>`}`}
+$("stage").innerHTML=top+f+h+(QS[st.s]||"");hud();window.scrollTo(0,0)}
+const q=(t,h)=>`<div class="card" style="border-top-color:#f08c00"><div class="fl2" style="color:#d9480f">❓ CASE QUESTION</div><b>${t}</b><p class="m">${h}</p><textarea placeholder="Jot your answer, then discuss with the class."></textarea></div>`;
+const QS=["",q("Who is owed transparency, explainability, or interpretability in this case? Which of the three are they owed, and why?","Think: Dana, the nurse, the agency, courts, the public."),q("Who actually had access to how the algorithm worked when decisions were being made? What ethical problems does that pose?","Think: the developer, the vendor, the agency, the nurse, the client."),q("As a data scientist, how would you assess whether stakeholders understood what they needed to know? What evidence would convince you the explanations were working?","Think: teach-back tests, whether people spot and fix errors, appeal outcomes. Your Round A vs B scores are one example."),q("What level or kind of explanation does each key stakeholder need? What technical or non-technical approaches could provide it?","Think: patient, clinician, auditor. Reason codes, counterfactuals, outcome audits, plain-language notices, advocates."),q("What are the possible trade-offs or risks of making the mechanisms behind benefit decisions more transparent?","Think: gaming, vendor secrecy, privacy, false comfort. Use the gaming-risk readout above."),q("Knowing what you know now, what two or three principles, priorities or values would you want a team designing benefit algorithms not to lose sight of? What about this case makes them especially important?","Think: contestability, validity against real need, involving affected people.")];
+const L=[s0,s1,s2,s3,s4,s5,s6];
+function go(d){st.s=Math.max(0,Math.min(6,st.s+d));L[st.s]()}
+$("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);$("fac").onchange=()=>L[st.s]();
+function fin(n,b){st.done[st.s]=1;st.pts[st.s]=n;if(b)st.bg[b]=1;hud()}
+
+function s0(){
+put(`<div class="story"><div class="eyebrow">YOUR FIRST DAY AT MERIDIAN HEALTH ANALYTICS (FICTIONAL)</div>
+<h2>Two systems decided. Nobody could say why.</h2>
+<p>You’re the newest data scientist on the Algorithmic Accountability team. Two cases landed on your desk this week. In both, software decided how much care real people would get, and the people affected couldn’t find out how.</p>
+<p>Over six levels you’ll investigate, test the systems yourself, and design what should have been disclosed.</p></div>
+<h3>The two real cases behind the game</h3>
+<div class="two">
+<div class="cs a"><div class="big">🏠</div><b>Case A · Home-care hours</b><div class="m">Arkansas Medicaid, 2016</div><ul><li>Nurses used to set weekly care hours. An algorithm took over.</li><li>Tammy Dobbs and Bradley Ledgerwood: 56 → 32 hours.</li><li>~280 questions asked, ~60 reportedly counted.</li><li>Hours were based on 2013–14 average billing, not individual need.</li><li>Roughly 4,000 people, about half the program, saw cuts in 2016.</li></ul></div>
+<div class="cs b"><div class="big">🏥</div><b>Case B · Hospital risk score</b><div class="m">Widely used US health-care tool</div><ul><li>Decided which patients got extra care.</li><li>It predicted future cost as a stand-in for health need.</li><li>Researchers found Black patients were consistently underserved.</li><li>Only ~17.7% of Black patients got extra care; ~46.5% without the bias.</li></ul></div></div>
+<h3 style="margin-top:14px">Three words you’ll use all game</h3>
+<div class="three"><div class="term t1"><b>Transparency</b><br>Access to how a system is built and governed: its goal, data, rules and results.</div>
+<div class="term t2"><b>Interpretability</b><br>People who run the system can understand how it works.</div>
+<div class="term t3"><b>Explainability</b><br>A person gets a reason for <i>their</i> result that they can act on.</div></div>
+<div class="mission"><b>🎯 Your mission.</b> By the end, write one sentence answering: <b>who is owed explainability and transparency, and why?</b></div>
+<div class="card" style="border-top-color:#364fc7"><b>How it plays</b><ul><li>Work through the levels in order on your own device.</li><li>Earn XP and badges. Note your scores; you’ll share them with the class.</li><li>Characters, patients and numbers inside the levels are fictional composites. The case files are real.</li></ul></div>
+<div class="src">Case facts from a KARK/Nexstar Arkansas report, the Center for Democracy &amp; Technology report on algorithm-driven benefits decisions (Oct 2020), and The Markup (2020).</div>`)}
+
+function s1(){
+const Q=["Which answers were scored, and how","How answers turn into hours","What data the rule was built from","Whether the nurse’s notes were used","What would change my hours","Who can override the result","How and when to appeal","Whether it was tested on people like me"];
+put(`<div class="card"><h2>Dana’s letter</h2><p>Dana (a composite of callers like Tammy and Bradley) has needed 56 hours of home care a week. Today she received this:</p>
+<div class="ntc"><b>Notice of change.</b> Your weekly care hours will change from <b>56</b> to <b>32</b>. Reason: assessment results.</div>
+<p><b>Tick every question you’d put to the agency.</b></p>
+${Q.map(q=>`<label class="c"><input type="checkbox" class="q1"> ${q}</label>`).join("")}
+<p>Would you tell her to appeal? <select id="d1"><option>Choose</option><option>Yes</option><option>No</option><option>Can’t tell</option></select> <button class="b" id="go1">Send to agency</button></p><div id="r1"></div></div>`);
+$("go1").onclick=()=>{const n=document.querySelectorAll(".q1:checked").length;st.res.q1=n;
+document.querySelectorAll(".q1:checked").forEach(x=>x.parentNode.insertAdjacentHTML("beforeend",'<span class="stamp">NOT PROVIDED</span>'));
+$("go1").disabled=true;$("r1").innerHTML=`<div class="key">You asked <b>${n}</b> things. The notice answered <b>0</b>. <b>Dana can’t contest what she can’t see.</b> What does she need, and from whom?</div>`;fin(10,"ex")}}
+
+function s2(){
+let left=6,p=[0,0,0,0,0,0];
+put(`<div class="card"><h2>Crack the hidden rule</h2><p>A hidden rule turns six scores (0 = independent, 3 = total help) into weekly hours. You get <b id="left">6</b> probes. Real clients get none.</p>
+${IT.map((n,i)=>`<div class="row"><label for="p${i}">${n}</label><input type="range" id="p${i}" min="0" max="3" value="0"><span id="pv${i}">0</span></div>`).join("")}
+<p><button class="b" id="run">Run probe</button></p><div class="sc"><table id="hist"><tr><th>#</th>${IT.map(n=>`<th>${n.slice(0,5)}</th>`).join("")}<th>Hours</th></tr></table></div></div>
+<div class="card"><b>Predict the hours for 3 new cases</b>${T.map((t,i)=>`<p class="m">Case ${i+1}: ${IT.map((n,j)=>n+" "+t[j]).join(", ")}<br><select class="pr">${HV.map(h=>`<option>${h}</option>`).join("")}</select> hrs</p>`).join("")}
+<b>Which items does the rule actually use?</b>${IT.map(n=>`<label class="c"><input type="checkbox" class="pk"> ${n}</label>`).join("")}
+<button class="b" id="go2">Lock in answers</button><div id="r2"></div></div>`);
+IT.forEach((_,i)=>$("p"+i).oninput=e=>{p[i]=+e.target.value;$("pv"+i).textContent=p[i]});
+$("run").onclick=()=>{if(!left)return;left--;$("left").textContent=left;st.pr.push(p.slice());
+$("hist").insertAdjacentHTML("beforeend",`<tr><td>${st.pr.length}</td>${p.map(v=>`<td>${v}</td>`).join("")}<td><b>${mh(p)}</b></td></tr>`)};
+$("go2").onclick=()=>{const pr=[...document.querySelectorAll(".pr")].map(x=>+x.value);const ok=pr.filter((v,i)=>v==mh(T[i])).length;
+const pk=[...document.querySelectorAll(".pk")].map(x=>x.checked);const right=pk.slice(0,5).every(x=>x)&&!pk[5];st.res.pred=ok;st.res.items=right;
+$("go2").disabled=true;$("r2").innerHTML=`<div class="key"><b>${ok}/3</b> predictions right. Items correct: <b class="${right?"ok":"bad"}">${right?"yes":"no"}</b>.<br>Rule: add Transferring through Mobility only; bands ${BANDS.map(b=>b[0]+"+ → "+b[1]).join(", ")}. <b>Medication help is ignored.</b><br>You were trained, with ${6-left} free probes. Dana has none. <b>Who actually gets to see the rule?</b></div>`;fin(ok*10+(right?20:0),right?"ip":0)}}
+
+function s3(){
+const B=st.ph=="B";
+const card=(c,i)=>{const h=mh(c.sc),S=sum5(c.sc);return `<div class="card"><b>${c.n}</b> <span class="m">${c.story}</span><br>Algorithm award: <b>${h} hrs/wk</b>${B?`<div class="sc"><table><tr>${IT.map(n=>`<th>${n.slice(0,5)}</th>`).join("")}<th>Score</th><th>Band</th></tr><tr>${c.sc.map((v,j)=>`<td>${v}${j==5?" (unused)":""}</td>`).join("")}<td>${S}</td><td>${BANDS.filter(b=>b[0]<=S).pop()[0]}+ → ${h}</td></tr></table></div>`:""}
+<br><label class="c" style="display:inline-block"><input type="radio" name="c${i}" value="0" checked> Looks right</label> <label class="c" style="display:inline-block"><input type="radio" name="c${i}" value="1"> Looks wrong</label></div>`};
+put(`<div class="card"><h2>${B?"Round B: factor sheet unlocked":"Round A: notice only"}</h2><p>Three of these six decisions hide a defect. ${B?"You can now see scores, totals and bands. Mark them again.":"You see only the person’s situation and the award, like a beneficiary would."}</p></div>${CASES.map(card).join("")}<button class="b" id="go3">Submit ${B?"round B":"round A"}</button><div id="r3"></div>`);
+$("go3").onclick=()=>{const a=CASES.map((c,i)=>+document.querySelector(`input[name=c${i}]:checked`).value);const sc=a.filter((v,i)=>v==CASES[i].bad).length;
+$("go3").disabled=true;
+if(!B){st.res.A=sc;$("r3").innerHTML=`<div class="key">Round A: <b>${sc}/6</b>. Unlock the factor sheet?</div><button class="b" id="to3b">Unlock round B</button>`;$("to3b").onclick=()=>{st.ph="B";s3()}}
+else{st.res.B=sc;$("r3").innerHTML=`<div class="key">Round A: <b>${st.res.A}/6</b> → Round B: <b>${sc}/6</b>.<ul>${CASES.filter(c=>c.bad).map(c=>`<li><b>${c.n}:</b> ${c.why}</li>`).join("")}</ul><b>Which defect needed more than factors to find?</b></div>`;fin(sc*10,sc>=5?"au":0)}}}
+
+function s4(){
+const sc=p=>Math.round(p[3]/160);
+const tbl=ph=>`<div class="sc"><table><tr><th>Patient</th><th>Group</th>${ph?"<th>Chronic conditions</th><th>Past-year cost</th>":""}<th>Risk score</th><th>Enroll</th></tr>${PT.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td>${ph?`<td>${p[2]}</td><td>$${p[3].toLocaleString()}</td>`:""}<td><b>${sc(p)}</b></td><td><input type="checkbox" class="e${ph}" value="${p[0]}"></td></tr>`).join("")}</table></div>`;
+const pick=ph=>[...document.querySelectorAll(".e"+ph+":checked")].map(x=>PT.find(p=>p[0]==x.value));
+const cnt=a=>`Group A: <b>${a.filter(p=>p[1]=="A").length}</b> · Group B: <b>${a.filter(p=>p[1]=="B").length}</b>`;
+put(`<div class="card"><h2>CareBridge: 4 slots</h2><p>CareBridge gives high-risk patients extra nurse support. Lakeview has <b>4 slots</b> and a risk score (0–100) for each of 12 patients. <b>Enroll 4 using the scores only.</b></p>${tbl(0)}<p><button class="b" id="en0">Enroll</button></p><div id="r4a"></div></div><div id="r4b"></div>`,1);
+$("en0").onclick=()=>{const a=pick(0);if(a.length!=4){$("r4a").innerHTML='<p class="bad">Pick exactly 4.</p>';return}
+$("en0").disabled=true;document.querySelectorAll(".e0").forEach(x=>x.disabled=true);
+$("r4a").innerHTML=`<div class="key">You enrolled ${cnt(a)}.<br>Dr. Ortiz says both groups have equally sick patients. <b>What is the risk score actually predicting?</b><br><select id="tg"><option value="">Choose</option><option value="s">How sick the patient is</option><option value="c">Next year’s healthcare cost</option><option value="a">Patient age</option><option value="g">Group membership</option></select> <button class="b" id="tgb">Reveal</button></div>`;
+$("tgb").onclick=()=>{if(!$("tg").value)return;const ok=$("tg").value=="c";st.res.tg=ok;$("tgb").disabled=true;$("tg").disabled=true;
+$("r4b").innerHTML=`<div class="card"><h2>Reveal: the score predicts cost</h2><p>${ok?"You got it. ":""}The score was built to predict <b>next year’s healthcare cost</b>, used as a stand-in for need. Now use the conditions column and <b>re-pick the 4 who need the program most</b>.</p>${tbl(1)}<p><button class="b" id="en1">Enroll by need</button></p><div id="r4c"></div></div>`;
+$("en1").onclick=()=>{const a=pick(1);if(a.length!=4){$("r4c").innerHTML='<p class="bad">Pick exactly 4.</p>';return}
+$("en1").disabled=true;const need=a.reduce((s,p)=>s+p[2],0);st.res.need=need;
+const m=LM[3];
+$("r4c").innerHTML=`<div class="key"><b>The score’s top 4:</b> Group A <b>4</b> · Group B <b>0</b>.<br><b>Your pick by need:</b> ${cnt(a)} (conditions covered: ${need} of a possible 20).<br>Group B patients are as sick but cost less, since less is spent on them (for example barriers to access). A cost-based score reads that as lower need. In the real case the underserved group was Black patients.</div><div class="file"><div class="fl2">📁 REAL CASE FILE</div>${m.f}</div>
+<p><b>Which disclosure would have let someone catch this?</b></p>
+<label class="c"><input type="radio" name="dq" value="a"> Each patient sees their own score</label>
+<label class="c"><input type="radio" name="dq" value="b"> The score formula’s weights</label>
+<label class="c"><input type="radio" name="dq" value="c"> What the score predicts, plus enrollment and outcomes by group</label>
+<label class="c"><input type="radio" name="dq" value="d"> The vendor’s source code</label>
+<button class="b" id="dqb">Check</button><div id="r4d"></div>`;
+$("dqb").onclick=()=>{const v=document.querySelector("input[name=dq]:checked");if(!v)return;$("dqb").disabled=true;const ok=v.value=="c";
+const msg={a:"A patient’s own score can’t reveal a pattern across groups.",b:"Weights show inputs but not that cost is the target or who gets missed.",c:"Right: the target plus outcomes by group exposes the proxy. That is transparency to auditors, not an individual explanation.",d:"Code might show the target, but not who gets missed. The audit needs the target plus outcomes by group."}[v.value];
+$("r4d").innerHTML=`<div class="key"><b class="${ok?"ok":"bad"}">${ok?"Correct.":"Not quite."}</b> ${msg}</div>`;
+fin((st.res.tg?10:0)+(st.res.need>=19?20:0)+(ok?10:0),st.res.tg&&ok?"pr":0)}}}}}
+
+function s5(){
+const W=[["b","Beneficiary / patient"],["n","Nurse / clinician"],["a","Auditor / court"],["p","Public"]];
+put(`<div class="card"><h2>Write the disclosure rules</h2><p>Set what each group gets. Win by: <b>catching all 4 defect types</b>, letting the <b>beneficiary contest meaningfully</b>, and keeping <b>gaming risk below High</b>.</p>
+${W.map(([k,n])=>`<div class="row" style="grid-template-columns:150px 1fr"><label>${n}</label><select id="l${k}">${LV.map((l,i)=>`<option value="${i}" ${st.lv[k]==i?"selected":""}>${l}</option>`).join("")}</select></div>`).join("")}
+<div class="m">0 notice only · 1 which answers counted · 2 rules and bands · 3 counterfactuals · 4 validation data, error rates, outcomes by group, change log</div><div id="r5" class="key"></div></div>`);
+const calc=()=>{W.forEach(([k])=>st.lv[k]=+$("l"+k).value);const v=st.lv;
+const D=[["Data-entry error (Arkansas)",v.b>=1||v.n>=1],["Scoring cliff (Arkansas)",Math.max(v.n,v.a,v.p)>=2],["Ignored need (Arkansas)",v.a>=3],["Wrong target: cost, not need (hospital)",v.a>=4]];
+const c=v.b>=3;
+const g=(v.b>=2?1:0)+(v.p>=2?2:0)+(v.p>=4?2:0)+(v.b>=4?2:0),gl=g<=1?"Low":g<=3?"Medium":"High";
+const w=D.every(x=>x[1])&&c&&gl!="High";
+$("r5").innerHTML=`${D.map(x=>`${x[1]?"✅":"❌"} ${x[0]}`).join("<br>")}<br>${c?"✅":"❌"} Beneficiary can contest<br>Gaming risk: <b class="${gl=="High"?"bad":""}">${gl}</b><br>${w?`<span class="ok"><b>Level cleared.</b></span> Different groups need different layers.`:"Keep adjusting."}`;
+if(w)fin(50,"ar")};
+W.forEach(([k])=>$("l"+k).onchange=calc);calc()}
+
+function s6(){
+const R=st.res;
+const MT=[["Dana can’t tell why her hours were cut","E","Her notice gave no reasons: an individual explanation."],["A nurse typed 0 for Eating by mistake and nobody noticed","E","Seeing which answers counted lets the client or nurse catch it."],["The rule ignores Medication help and no staff knew","I","People running the system need to understand how it works."],["One point at a band edge is worth 8 hours","I","Understanding the rule exposes cliffs."],["The hospital score predicts cost, not need","T","Needs the target and group outcomes disclosed to auditors."],["The state adopted the tool with no public notice or comment","T","Public notice and comment is transparency to the public."]];
+const OP=[["Choose",""],["Explainability","E"],["Interpretability","I"],["Transparency","T"]];
+put(`<div class="card"><h2>Your evidence</h2><div class="key"><ul><li>Level 1: the notice answered 0 of the ${R.q1??"?"} things you asked.</li><li>Level 2: ${R.pred??"?"}/3 predictions; ignored item found: ${R.items?"yes":"no"}.</li><li>Level 3: ${R.A??"?"}/6 blind vs ${R.B??"?"}/6 with the factor sheet.</li><li>Level 4: cost-based score enrolled 0 of 4 from Group B; you enrolled by need (${R.need??"?"}/20 conditions).</li><li>Level 5: ${st.done[5]?"tiered design cleared":"not cleared yet"}.</li></ul></div>
+<p><b>Match each failure to the thing that would have caught it.</b></p>
+${MT.map((m,i)=>`<p class="m" style="margin:.5em 0 .1em">${m[0]}<br><select class="mt">${OP.map(o=>`<option value="${o[1]}">${o[0]}</option>`).join("")}</select></p>`).join("")}
+<p><b>One sentence for the judge: who is owed what, and why?</b></p><textarea placeholder="Write your claim, then share it with the class."></textarea>
+<p><b>If the algorithm were fully interpretable and clearly explained, would any ethical problems remain?</b> Tick what would still be wrong.</p>
+${["Rule built on past cost, not actual need (both cases)","Goal was saving money, not meeting care needs","Burden of finding errors sits on the people affected","Affected people were not consulted before rollout","Hours capped well below prior levels","Risk of institutionalization (ADA)"].map(x=>`<label class="c"><input type="checkbox" class="rm"> ${x}</label>`).join("")}
+<button class="b" id="go6">Close the case</button><div id="r6"></div></div>`);
+$("go6").onclick=()=>{const a=[...document.querySelectorAll(".mt")].map(x=>x.value);const hit=a.filter((v,i)=>v==MT[i][1]).length;const n=document.querySelectorAll(".rm:checked").length;$("go6").disabled=true;
+fin(hit*5+n*5,n>=4?"sk":0);const t=xp(),rk=t>=200?"Chief Advocate":t>=130?"Advocate":"Trainee";
+const nm={E:"Explainability",I:"Interpretability",T:"Transparency"};
+$("r6").innerHTML=`<div class="key"><div class="rank">${rk} · ${t} XP</div>
+<p><b>Matching: ${hit}/6.</b></p><ul>${MT.map((m,i)=>`<li>${a[i]==m[1]?"✅":"❌"} ${m[0]} → <b>${nm[m[1]]}</b>. ${m[2]}</li>`).join("")}</ul>
+<p class="m">Some failures overlap; defend your answer if it differs.</p>
+<b>Takeaway.</b> Explainability lets an individual contest a decision. Interpretability lets operators notice errors. Transparency lets auditors, courts and the public hold the system to account. Both systems lacked all three, and even all three would not fix a wrong objective.</div>`}}
+s0();
+</script></main></body></html>
